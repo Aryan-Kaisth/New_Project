@@ -1,14 +1,14 @@
 import sys
-import traceback
 from src.logger import logging
 
 
 def get_detailed_error_message(error: Exception, error_details=sys) -> str:
     """
-    Extracts detailed error information including filename,
-    line number, and traceback.
+    Extracts detailed error information including filename
+    and line number from the current exception.
     """
     _, _, exc_tb = error_details.exc_info()
+
     if exc_tb is None:
         return str(error)
 
@@ -16,25 +16,21 @@ def get_detailed_error_message(error: Exception, error_details=sys) -> str:
     line_no = exc_tb.tb_lineno
 
     return (
-        f"Error occurred in file [{file_name}], "
-        f"line [{line_no}], "
-        f"error [{str(error)}]"
+        f"Error occurred in file [{file_name}] "
+        f"at line [{line_no}] "
+        f"with message [{error}]"
     )
 
 
 class CustomException(Exception):
     """
-    Custom exception class that captures detailed error context
-    and logs it automatically.
+    Custom exception used only for logging detailed errors.
     """
 
     def __init__(self, error: Exception, error_details=sys):
-        self.error_message = get_detailed_error_message(
-            error=error,
-            error_details=error_details
-        )
+        self.error_message = get_detailed_error_message(error, error_details)
 
-        # Log immediately
+        # log the error
         logging.error(self.error_message)
 
         super().__init__(self.error_message)
